@@ -29,7 +29,7 @@ from game_logic import (
 ATTEMPT_LIMITS = {"Easy": 6, "Normal": 8, "Hard": 5}
 
 
-def start_new_game(low: int, high: int) -> None:
+def start_new_game(low: int, high: int, difficulty: str) -> None:
     """Reset every piece of game state for a fresh round.
 
     FIX (#3, #4, #5): the original New Game handler only reset `secret` and
@@ -44,6 +44,7 @@ def start_new_game(low: int, high: int) -> None:
     st.session_state.score = 0
     st.session_state.status = "playing"
     st.session_state.history = []
+    st.session_state.active_difficulty = difficulty
     st.session_state.input_nonce = st.session_state.get("input_nonce", 0) + 1
 
 
@@ -68,7 +69,14 @@ st.sidebar.caption(f"Attempts allowed: {attempt_limit}")
 # Session state (initialise once on first run)
 # --------------------------------------------------------------------------
 if "status" not in st.session_state:
-    start_new_game(low, high)
+    start_new_game(low, high, difficulty)
+
+# FIX: regenerate the secret when the difficulty changes. Otherwise the old
+# secret could fall outside the newly selected range (e.g. a secret of 45 from
+# Normal while the dropdown now shows Easy 1-20), making the game unwinnable.
+elif st.session_state.active_difficulty != difficulty:
+    start_new_game(low, high, difficulty)
+    st.rerun()
 
 # --------------------------------------------------------------------------
 # Main guess panel
@@ -108,7 +116,7 @@ with col3:
 # Button / game-state handling
 # --------------------------------------------------------------------------
 if new_game:
-    start_new_game(low, high)
+    start_new_game(low, high, difficulty)
     st.rerun()
 
 # If the previous round already ended, show the result and stop here.

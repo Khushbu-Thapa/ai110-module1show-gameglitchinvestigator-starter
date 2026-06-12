@@ -23,10 +23,17 @@ class TestGetRangeForDifficulty:
         assert get_range_for_difficulty("Easy") == (1, 20)
 
     def test_normal(self):
-        assert get_range_for_difficulty("Normal") == (1, 100)
+        assert get_range_for_difficulty("Normal") == (1, 50)
 
     def test_hard(self):
-        assert get_range_for_difficulty("Hard") == (1, 50)
+        assert get_range_for_difficulty("Hard") == (1, 100)
+
+    # The range must grow as difficulty increases (wider range = harder).
+    def test_ranges_increase_with_difficulty(self):
+        easy = get_range_for_difficulty("Easy")[1]
+        normal = get_range_for_difficulty("Normal")[1]
+        hard = get_range_for_difficulty("Hard")[1]
+        assert easy < normal < hard
 
     # Edge case: unknown difficulty falls back to the default range.
     def test_unknown_falls_back_to_default(self):

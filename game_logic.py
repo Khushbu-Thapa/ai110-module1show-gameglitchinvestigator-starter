@@ -6,12 +6,15 @@ tested without starting the Streamlit runtime.
 
 
 def get_range_for_difficulty(difficulty: str):
+    # FIX: ranges now grow with difficulty (a wider range is harder to guess).
+    # Originally Hard (1-50) was a smaller range than Normal (1-100), making
+    # Hard easier than Normal.
     if difficulty == "Easy":
         return 1, 20
     if difficulty == "Normal":
-        return 1, 100
-    if difficulty == "Hard":
         return 1, 50
+    if difficulty == "Hard":
+        return 1, 100
     return 1, 100
 
 
